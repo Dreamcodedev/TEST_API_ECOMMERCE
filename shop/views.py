@@ -1,23 +1,21 @@
-from rest_framework.views import APIView
-from rest_framework.response import Response
+from rest_framework.viewsets import ModelViewSet
+
 
 from shop.models import Category, Product
 from shop.serializers import CategorySerializer, ProductSerializer
 
-class CategoryAPIView(APIView):
+class CategoryViewSet(ModelViewSet):
 
-    def get(self, *args, **kwargs):
-        categories=Category.objects.all()
-        serializer=CategorySerializer(categories, many=True)
+    serializer_class=CategorySerializer
 
-        return Response(serializer.data)
+    def get_queryset(self):
+        return Category.objects.all()
 
 
-class ProductAPIView(APIView):
+class ProductViewSet(ModelViewSet):
 
-    def get(self, *args, **kwargs):
-        products=Product.objects.all()
-        serializer=ProductSerializer(products, many=True)
+    serializer_class=ProductSerializer
 
-        return Response(serializer.data)
+    def get_queryset(set):
+        return Product.objects.all()
 
