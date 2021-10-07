@@ -1,7 +1,7 @@
 from django.urls import reverse_lazy
 from rest_framework.test import APITestCase
 
-from shop.models import Category
+from shop.models import Category, Product
 
 class TestCategory(APITestCase):
 
@@ -40,4 +40,36 @@ class TestCategory(APITestCase):
         self.assertFalse(Category.objects.exists())
 
 
-        
+class TestProduct(APITestCase):
+
+    url= reverse_lazy('product-list')
+
+    def format_datetime(self, value):
+        return value.strftime("%Y-%m-%dT%H:%M:%S.%fZ") 
+
+
+    def test_list(self):
+        product=Product.objects.create(name='Pomme', active=True)
+        Product.objects.create(name='Mangue', active=False)
+
+        response=self.client.get(self.url)   
+        self.assertEqual(response.status_code,200)
+
+        expected=[
+            {
+                'id': product.pk,
+                'name': product.name,
+                'date_created': self.format_datetime(product.date_created),
+                'date_updated': self.format_datetime(product.date_updated)
+
+            }
+        ] 
+
+        self.assertEqual(expected,response.json())  
+
+        def test_create(self):
+            self.assertFalse(Product.objects.exists())
+            response = self.client.post(self.url, data={'name': 'Nouveau produit'})
+
+            self.assertEqual(response.status_code, 405)
+            self.assertFalse(Product.objects.exists())
